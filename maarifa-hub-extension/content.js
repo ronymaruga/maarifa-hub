@@ -5,6 +5,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.action === 'getPageContent') {
     const content = extractPageContent();
     sendResponse(content);
+  } else if (message.action === 'showSavedIndicator') {
+    showSavedIndicator();
   }
   return true;
 });
@@ -43,7 +45,7 @@ function extractPageContent() {
 // Add a visual indicator when page is saved (optional)
 function showSavedIndicator() {
   const indicator = document.createElement('div');
-  indicator.textContent = 'Saved to KnowledgeVault';
+  indicator.textContent = 'Saved to MaarifaHub';
   indicator.style.cssText = `
     position: fixed;
     top: 20px;
@@ -95,11 +97,4 @@ function showSavedIndicator() {
   }, 3000);
 }
 
-// Listen for save confirmation from background script
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'showSavedIndicator') {
-    showSavedIndicator();
-  }
-});
-
-console.log('KnowledgeVault content script loaded');
+console.log('MaarifaHub content script loaded');
