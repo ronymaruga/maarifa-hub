@@ -1,40 +1,210 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maarifa Hub</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KnowledgeVault</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 400px;
+      min-height: 500px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+    }
+
+    .header {
+      padding: 20px;
+      text-align: center;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .header p {
+      font-size: 12px;
+      opacity: 0.9;
+    }
+
+    .search-box {
+      padding: 15px;
+      background: rgba(255,255,255,0.1);
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      background: rgba(255,255,255,0.95);
+      color: #333;
+    }
+
+    .search-input::placeholder {
+      color: #999;
+    }
+
+    .actions {
+      padding: 15px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #fff;
+      color: #667eea;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.2);
+      color: #fff;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .content {
+      padding: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .knowledge-item {
+      background: rgba(255,255,255,0.1);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .knowledge-item:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateX(5px);
+    }
+
+    .item-title {
+      font-weight: 600;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .item-summary {
+      font-size: 12px;
+      opacity: 0.9;
+      line-height: 1.4;
+    }
+
+    .item-date {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 5px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      opacity: 0.8;
+    }
+
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 15px;
+      opacity: 0.5;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top: 3px solid #fff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .footer {
+      padding: 15px;
+      text-align: center;
+      font-size: 11px;
+      opacity: 0.7;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+  </style>
 </head>
 <body>
-    <div class="header">
-        <h1>Maarifa Hub KnowledgeVault</h1>
-        <p>Your private, AI-powered knowledge base</p>
-    </div>
+  <div class="header">
+    <h1>🧠 KnowledgeVault</h1>
+    <p>Your private, AI-powered knowledge base</p>
+  </div>
 
-    <div class="search-box">
-        <input type="text" 
-        class="search-input"
-        id="searchInput"
-        placeholder="Ask anything about your saved knowledge..."
-        >
-    </div>
+  <div class="search-box">
+    <input 
+      type="text" 
+      class="search-input" 
+      id="searchInput"
+      placeholder="Ask anything about your saved knowledge..."
+    >
+  </div>
 
-    <div class="content" id="content">
-        <div class="empty-state">
-            <svg fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+  <div class="actions">
+    <button class="btn btn-primary" id="savePageBtn">💾 Save This Page</button>
+    <button class="btn btn-secondary" id="viewAllBtn">📚 View All</button>
+    <button class="btn btn-secondary" id="openWorkspaceBtn">🚀 Workspace</button>
+  </div>
+
+  <div class="content" id="content">
+    <div class="empty-state">
+      <svg fill="currentColor" viewBox="0 0 20 20">
+        <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
       </svg>
-            <p>No saved knowledge yet.</p>
-            <p style="margin-top: 10px;">Click "Save This Page" to get started!</p>
-
-        </div>
+      <p>No saved knowledge yet.</p>
+      <p style="margin-top: 10px;">Click "Save This Page" to get started!</p>
     </div>
+  </div>
 
-    <div class="footer">
-        All processing happens locally on your device
-    </div>
-    
-    <script src="popup.js"></script>
+  <div class="footer">
+    All processing happens locally on your device 🔒
+  </div>
+
+  <script src="popup.js"></script>
 </body>
 </html>

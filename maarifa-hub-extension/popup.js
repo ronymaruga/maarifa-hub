@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const searchInput = document.getElementById('searchInput');
   const savePageBtn = document.getElementById('savePageBtn');
   const viewAllBtn = document.getElementById('viewAllBtn');
+  const openWorkspaceBtn = document.getElementById('openWorkspaceBtn');
   const contentDiv = document.getElementById('content');
 
   // Check AI capabilities
@@ -46,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Save current page button
   savePageBtn.addEventListener('click', async () => {
     savePageBtn.disabled = true;
-    savePageBtn.textContent = 'Saving...';
+    savePageBtn.textContent = '💾 Saving...';
 
     try {
       // Get current tab
@@ -59,26 +60,26 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
 
       if (response.success) {
-        savePageBtn.textContent = 'Saved!';
+        savePageBtn.textContent = '✅ Saved!';
         setTimeout(() => {
-          savePageBtn.textContent = 'Save This Page';
+          savePageBtn.textContent = '💾 Save This Page';
           savePageBtn.disabled = false;
         }, 2000);
 
         // Reload the list
         loadAllPages();
       } else {
-        savePageBtn.textContent = 'Error';
+        savePageBtn.textContent = '❌ Error';
         setTimeout(() => {
-          savePageBtn.textContent = 'Save This Page';
+          savePageBtn.textContent = '💾 Save This Page';
           savePageBtn.disabled = false;
         }, 2000);
       }
     } catch (error) {
       console.error('Error saving page:', error);
-      savePageBtn.textContent = 'Error';
+      savePageBtn.textContent = '❌ Error';
       setTimeout(() => {
-        savePageBtn.textContent = 'Save This Page';
+        savePageBtn.textContent = '💾 Save This Page';
         savePageBtn.disabled = false;
       }, 2000);
     }
