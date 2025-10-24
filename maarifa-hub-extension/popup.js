@@ -207,4 +207,4 @@ function escapeHtml(text) {
   return div.innerHTML;
 }
 
-console.log('KnowledgeVault popup loaded');
+console.log('Maarifahub popup loaded');
