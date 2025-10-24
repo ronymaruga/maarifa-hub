@@ -90,6 +90,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     searchInput.value = '';
     loadAllPages();
   });
+
+  // Open workspace button
+  openWorkspaceBtn.addEventListener('click', async () => {
+    try {
+      await chrome.sidePanel.open({ windowId: chrome.windows.WINDOW_ID_CURRENT });
+    } catch (error) {
+      console.error('Error opening side panel:', error);
+    }
+  });
 });
 
 // Load all saved pages
