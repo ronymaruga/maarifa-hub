@@ -45,15 +45,28 @@ async function initializeAI() {
 
 // Create context menu when extension is installed
 chrome.runtime.onInstalled.addListener(() => {
-  // Create context menu item
+  // Create context menu items
   chrome.contextMenus.create({
     id: 'saveToKnowledgeVault',
-    title: 'Save to KnowledgeVault',
+    title: '💾 Save to KnowledgeVault',
     contexts: ['page', 'selection']
+  });
+  
+  chrome.contextMenus.create({
+    id: 'openSidePanel',
+    title: '📋 Open KnowledgeVault Workspace',
+    contexts: ['page']
   });
 
   // Initialize AI
   initializeAI();
+});
+
+// Handle keyboard command for side panel
+chrome.commands.onCommand.addListener((command) => {
+  if (command === 'open-side-panel') {
+    chrome.sidePanel.open();
+  }
 });
 
 // Handle context menu clicks
@@ -296,4 +309,4 @@ async function rewriteText(text) {
   }
 }
 
-console.log('Maarifa Hub background service worker loaded');
+console.log('KnowledgeVault background service worker loaded');
