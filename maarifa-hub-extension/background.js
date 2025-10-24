@@ -1,4 +1,4 @@
-// background.js - Service Worker for KnowledgeVault
+// background.js - Service Worker for MaarifaHub
 
 // Check if AI capabilities are available
 let aiCapabilities = {
@@ -48,13 +48,13 @@ chrome.runtime.onInstalled.addListener(() => {
   // Create context menu items
   chrome.contextMenus.create({
     id: 'saveToKnowledgeVault',
-    title: '💾 Save to KnowledgeVault',
+    title: '💾 Save to MaarifaHub',
     contexts: ['page', 'selection']
   });
   
   chrome.contextMenus.create({
     id: 'openSidePanel',
-    title: '📋 Open KnowledgeVault Workspace',
+    title: '📋 Open MaarifaHub Workspace',
     contexts: ['page']
   });
 
@@ -73,6 +73,8 @@ chrome.commands.onCommand.addListener((command) => {
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   if (info.menuItemId === 'saveToKnowledgeVault') {
     await savePage(tab, info.selectionText);
+  } else if (info.menuItemId === 'openSidePanel') {
+    await chrome.sidePanel.open({ windowId: tab.windowId });
   }
 });
 
@@ -133,15 +135,13 @@ async function savePage(tab, selectionText = null) {
       isSelection: !!selectionText
     };
 
-    // Save to Chrome storage
-    await chrome.storage.local.get(['knowledgeBase'], (result) => {
-      const knowledgeBase = result.knowledgeBase || [];
-      knowledgeBase.unshift(entry); // Add to beginning
-      
-      chrome.storage.local.set({ knowledgeBase }, () => {
-        console.log('Page saved successfully:', entry.title);
-      });
-    });
+    // Save to Chrome storage using promises
+    const result_storage = await chrome.storage.local.get(['knowledgeBase']);
+    const knowledgeBase = result_storage.knowledgeBase || [];
+    knowledgeBase.unshift(entry); // Add to beginning
+    
+    await chrome.storage.local.set({ knowledgeBase });
+    console.log('Page saved successfully:', entry.title);
 
     return { success: true, entry };
   } catch (error) {
@@ -202,37 +202,32 @@ async function summarizeContent(text) {
 
 // Search knowledge base using Prompt API
 async function searchKnowledge(query) {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(['knowledgeBase'], async (result) => {
-      const knowledgeBase = result.knowledgeBase || [];
+  const result = await chrome.storage.local.get(['knowledgeBase']);
+  const knowledgeBase = result.knowledgeBase || [];
 
-      if (knowledgeBase.length === 0) {
-        resolve({ results: [], message: 'No saved knowledge yet' });
-        return;
-      }
+  if (knowledgeBase.length === 0) {
+    return { results: [], message: 'No saved knowledge yet' };
+  }
 
-      // If AI is available, use semantic search
-      if (aiCapabilities.canPrompt && query.trim()) {
-        try {
-          const semanticResults = await semanticSearch(query, knowledgeBase);
-          resolve({ results: semanticResults });
-          return;
-        } catch (error) {
-          console.error('Semantic search failed, falling back to keyword search:', error);
-        }
-      }
+  // If AI is available, use semantic search
+  if (aiCapabilities.canPrompt && query.trim()) {
+    try {
+      const semanticResults = await semanticSearch(query, knowledgeBase);
+      return { results: semanticResults };
+    } catch (error) {
+      console.error('Semantic search failed, falling back to keyword search:', error);
+    }
+  }
 
-      // Fallback: simple keyword search
-      const queryLower = query.toLowerCase();
-      const filtered = knowledgeBase.filter(entry => {
-        return entry.title.toLowerCase().includes(queryLower) ||
-               entry.summary.toLowerCase().includes(queryLower) ||
-               entry.fullText.toLowerCase().includes(queryLower);
-      });
-
-      resolve({ results: filtered });
-    });
+  // Fallback: simple keyword search
+  const queryLower = query.toLowerCase();
+  const filtered = knowledgeBase.filter(entry => {
+    return entry.title.toLowerCase().includes(queryLower) ||
+           entry.summary.toLowerCase().includes(queryLower) ||
+           entry.fullText.toLowerCase().includes(queryLower);
   });
+
+  return { results: filtered };
 }
 
 // Semantic search using Prompt API
@@ -279,12 +274,9 @@ Example: 0,2,5`;
 }
 
 // Get all saved pages
-function getAllPages() {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(['knowledgeBase'], (result) => {
-      resolve({ results: result.knowledgeBase || [] });
-    });
-  });
+async function getAllPages() {
+  const result = await chrome.storage.local.get(['knowledgeBase']);
+  return { results: result.knowledgeBase || [] };
 }
 
 // Rewrite text using Rewriter API
@@ -309,4 +301,4 @@ async function rewriteText(text) {
   }
 }
 
-console.log('KnowledgeVault background service worker loaded');
+console.log('MaarifaHub background service worker loaded');
